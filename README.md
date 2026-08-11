@@ -1,0 +1,96 @@
+# Enterprise AI Transformation Galaxy
+
+**The AI Transformation Maturity Galaxy**: an explorable 3D galaxy where every star is a real Fortune 500 enterprise, every constellation is a transformation strategy, and every trajectory is a path to AI maturity. Built as an Awwwards-level data visualization: the galaxy *is* the interface.
+
+Real companies. One universe. Explore.
+
+## Features
+
+- **Fortune 500 3D galaxy**: instanced `IcosahedronGeometry` rendering of ~193 curated enterprises with per-star maturity color (orange → amber → teal), bloom post-processing, and static dust particles for parallax depth.
+- **Force-directed layout**: `d3-force-3d` positions companies so same-industry companies cluster and high-maturity leaders repel; the layout is pre-computed and served by the API.
+- **Camera as spacecraft**: `camera-controls` with smooth inertia: drag to orbit, scroll to dolly, double-click a star to fly to planet view, `Esc` to return.
+- **Hover → tooltip**: raycaster-driven hover shows company, industry, and maturity score in a cursor-following glass tooltip.
+- **Planet view**: camera flies in, the star scales up with orbital rings, and a slide-in panel shows the full maturity breakdown: overall score, 5-dimension radar chart (SVG), animated dimension bars, and transformation trajectory with EBITDA impact, exit multiple, holding-period reduction, and milestone timeline.
+- **Trajectory paths**: violet Catmull-Rom splines draw from a company to its projected future state in 3D space.
+- **Add Your Company**: a minimal form (name, industry, AI status slider) places a new persistent star in the galaxy, saves it to `localStorage`, flies the camera to it, and offers a trajectory prompt. User stars can be removed from the galaxy with a two-step confirm and an Undo toast.
+- **Company search**: a search palette in the galaxy: type a name and fly straight to the star, with keyboard navigation (arrows + Enter) and results for both dataset and user-added stars.
+- **Toast system**: added/removed notifications survive a refresh (sessionStorage) but keep only their remaining window; expired toasts never resurrect.
+- **Landing sequence**: staggered star appear, title fade in/out, bottom bar with mode indicator (Galaxy / Constellation / Planet) and star count.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 14 (App Router), TypeScript |
+| 3D | Three.js, React Three Fiber, @react-three/drei |
+| Post-processing | @react-three/postprocessing (UnrealBloom, ACESFilmic) |
+| Camera | camera-controls |
+| Layout | d3-force-3d |
+| State | Zustand |
+| Styling | Tailwind CSS, Framer Motion |
+| Testing | Playwright (real-browser E2E) |
+
+## Getting Started
+
+```bash
+npm install
+npm run dev        # http://localhost:3000
+```
+
+- **`/`**: explainer landing page (what the galaxy is, how to read it, how to navigate), leading into the tool
+- **`/galaxy`**: the 3D galaxy itself
+- **`/methodology`**: the five scoring pillars, the rubric, and the full research trail (every company with its source URLs)
+
+> Tip: for the direct experience, open `http://localhost:3000/galaxy`.
+
+**Environment**: `NEXT_PUBLIC_SITE_URL` (see `.env.local.example`) is the absolute URL of the deployed app. It becomes the `metadataBase` that resolves the Open Graph / Twitter image URLs and the canonical link; without it, builds fall back to `http://localhost:3000`. CI injects the same value from the `NEXT_PUBLIC_SITE_URL` repository secret, so set that secret to the production domain once deployed.
+
+Other scripts:
+
+```bash
+npm run build      # production build
+npm run start      # serve the production build
+npm run lint       # ESLint
+npm run typecheck  # tsc --noEmit
+npm run test:e2e   # Playwright E2E against a production build on :3100
+```
+
+The E2E suite proves the interaction pipeline with **real browser input**: boot + 500 stars, raycast → tooltip, double-click → planet view → trajectory → reset, the full add/delete/undo/localStorage loop, and toast remaining-window hydration.
+
+CI also enforces the Lighthouse accessibility/SEO scores (currently **100/100 on both routes**) via `scripts/lighthouse-gate.mjs`; the gate fails the build on any regression.
+
+## How It Works
+
+- **Data**: `/api/companies` serves a curated dataset of ~193 real Fortune 500 enterprises (`lib/fortune500-data.ts`). Each company carries estimated AI-maturity scores (0–100 across five dimensions) plus a researched note on its public AI positioning, compiled from earnings-call commentary, product launches, and reported deployments (research estimates, not audited). Layout positions are pre-computed with the force simulation; 12 AI flagship companies are marked featured.
+- **Rendering**: all 500 stars share one `InstancedMesh` (one draw call); per-instance color and scale are set from maturity. Only hovered/selected stars get individual meshes. Dust is a static `Points` cloud.
+- **LOD**: labels and constellation lines fade in based on camera distance, so the galaxy stays uncluttered at overview and data-rich up close.
+- **Persistence**: user stars live in `localStorage`; pending toasts in `sessionStorage` (survive refresh, die with the tab).
+
+## Project Structure
+
+```
+app/            Next.js routes: page (landing), galaxy/ (the tool), methodology/, layout, /api/companies
+components/
+  galaxy/       3D scene: GalaxyScene, StarField, StarLabels, ConstellationLines,
+                TrajectoryPath, PlanetSystem, DustParticles, CameraRig, PostProcessing
+  ui/           Overlay: LandingTitle, Tooltip, BottomBar, PlanetPanel, RadarChart,
+                AddCompanyForm, ToastStack, ModeIndicator
+lib/            constants, data generator, galaxy layout, user-company helpers
+store/          Zustand store (mode, selection, toasts, user stars)
+types/          Company / Trajectory / Maturity data model
+e2e/            Playwright specs
+```
+
+## Contributing
+
+This project is open source and contributions are welcome:
+
+- **Report an issue, request a company, or suggest a feature**: the "Report an issue" flow in the tool opens a pre-filled GitHub issue. Point `REPO_ISSUES_URL` in `components/ui/ContactForm.tsx` at your repository's `issues/new` URL before publishing.
+- **Data corrections**: every score on the `/methodology` page links to its public source. If a score or note is off, open an issue with the correction and the source URL.
+- **Pull requests**: fork, branch, and open a PR. CI runs lint, typecheck, build, the full E2E suite, and a Lighthouse a11y/SEO gate on every push and PR.
+
+The design specification lives in `galaxy-handoff.md`.
+
+## License
+
+[MIT](LICENSE) © Enterprise AI Transformation Galaxy contributors.

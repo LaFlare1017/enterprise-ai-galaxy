@@ -1,0 +1,74 @@
+import type { Metadata, Viewport } from 'next';
+import { GeistSans } from 'geist/font/sans';
+import './globals.css';
+
+// Absolute base for OG/twitter image URLs and the canonical link. Set
+// NEXT_PUBLIC_SITE_URL at deploy time (see .env.local.example and the CI
+// secret); the localhost fallback keeps local builds deterministic. The
+// value is trimmed so an unset or empty CI secret falls back safely.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || 'http://localhost:3000';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: 'Enterprise AI Transformation Galaxy',
+  description:
+    'An explorable galaxy where every star is a Fortune 500 enterprise and every trajectory is a path to AI maturity. Real companies. One universe. Explore.',
+  keywords: [
+    'AI transformation',
+    'AI maturity',
+    'Fortune 500 AI',
+    'enterprise AI adoption',
+    'maturity model',
+    'data visualization',
+    '3D galaxy',
+    'open source',
+  ],
+  openGraph: {
+    title: 'Enterprise AI Transformation Galaxy',
+    description: 'A 3D galaxy of Fortune 500 enterprises, scored on estimated AI maturity from public disclosures. One universe. Explore.',
+    type: 'website',
+    siteName: 'Enterprise AI Transformation Galaxy',
+    // Clean, query-string-free URL: several unfurl crawlers (notably
+    // LinkedIn) refuse og:image URLs that carry cache-busting query params.
+    images: [
+      {
+        url: '/og',
+        width: 1200,
+        height: 630,
+        alt: 'Enterprise AI Transformation Galaxy',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Enterprise AI Transformation Galaxy',
+    description: 'A 3D galaxy of Fortune 500 enterprises, scored on estimated AI maturity from public disclosures.',
+    images: ['/og'],
+  },
+  // iOS standalone mode: installed from the home screen, the galaxy opens
+  // without Safari chrome and paints over the status bar on the void color.
+  appleWebApp: {
+    capable: true,
+    title: 'Enterprise AI Galaxy',
+    statusBarStyle: 'black-translucent',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#030308',
+  width: 'device-width',
+  initialScale: 1,
+  // No maximum-scale: pinching to zoom must stay available (WCAG 1.4.4).
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={GeistSans.variable}>
+      <body className="bg-void text-star-bright antialiased">{children}</body>
+    </html>
+  );
+}
