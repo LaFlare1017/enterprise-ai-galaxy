@@ -8,7 +8,7 @@ import { useState } from 'react';
  * going live; the placeholder keeps the code functional until then.
  */
 export const REPO_ISSUES_URL =
-  'https://github.com/your-username/enterprise-ai-galaxy/issues/new';
+  'https://github.com/LaFlare1017/enterprise-ai-galaxy/issues/new';
 
 export function ContactForm() {
   const [name, setName] = useState('');
