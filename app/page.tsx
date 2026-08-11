@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { CompanyMarquee } from '@/components/ui/CompanyMarquee';
 import { ContactForm } from '@/components/ui/ContactForm';
 import InteractiveLines from '@/components/ui/InteractiveLines';
 import { breathTiming, DIMENSIONS } from '@/lib/constants';
@@ -166,6 +167,9 @@ export default function LandingPage() {
           Scroll to explore
         </p>
       </section>
+
+      {/* ---------------------------------------------- Company marquee */}
+      <CompanyMarquee />
 
       {/* ------------------------------------------------------ What it is */}
       <section className="bg-void/30 px-6 py-24">
