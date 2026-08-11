@@ -10,6 +10,8 @@ import { PlanetPanel } from '@/components/ui/PlanetPanel';
 import { AddCompanyForm } from '@/components/ui/AddCompanyForm';
 import { CompanySearch } from '@/components/ui/CompanySearch';
 import { ToastStack } from '@/components/ui/ToastStack';
+import { canUseWebGL, WebGLFallback } from '@/components/galaxy/WebGLFallback';
+import { GalaxyErrorBoundary } from '@/components/galaxy/GalaxyErrorBoundary';
 
 // Three.js must never run on the server; load it client-side only.
 const GalaxyScene = dynamic(() => import('./GalaxyScene'), {
@@ -21,6 +23,13 @@ export default function GalaxyApp({ companies: baseCompanies }: { companies: Com
   const userStars = useGalaxyStore((s) => s.userStars);
   const [addOpen, setAddOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [webglOk, setWebglOk] = useState<boolean | null>(null);
+
+  // Probe WebGL on the client only (SSR assumes support to avoid a flash for
+  // the overwhelming majority; the probe resolves right after mount).
+  useEffect(() => {
+    setWebglOk(canUseWebGL());
+  }, []);
 
   // Load persisted user stars + any pending "removed" toasts after mount
   // (SSR HTML stays stable). Pending toasts let Undo survive a refresh.
@@ -60,9 +69,15 @@ export default function GalaxyApp({ companies: baseCompanies }: { companies: Com
     handle.__galaxy = { ...((handle.__galaxy as Record<string, unknown>) ?? {}), store: useGalaxyStore };
   }, []);
 
+  if (webglOk === false) {
+    return <WebGLFallback />;
+  }
+
   return (
     <div className="fixed inset-0 overflow-hidden">
-      <GalaxyScene companies={companies} />
+      <GalaxyErrorBoundary>
+        <GalaxyScene companies={companies} />
+      </GalaxyErrorBoundary>
       <LandingTitle />
       <Tooltip />
       <PlanetPanel />
