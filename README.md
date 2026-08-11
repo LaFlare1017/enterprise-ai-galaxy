@@ -91,6 +91,10 @@ This project is open source and contributions are welcome:
 
 The design specification lives in `galaxy-handoff.md`.
 
+## Logo attribution
+
+The brand marks in `public/logos/` belong to their respective companies and are used nominatively to identify them. Per-file sources are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
 ## License
 
 [MIT](LICENSE) © Enterprise AI Transformation Galaxy contributors.
