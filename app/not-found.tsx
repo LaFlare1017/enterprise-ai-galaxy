@@ -4,8 +4,7 @@ export const metadata: Metadata = {
   title: '404: Not Found · Enterprise AI Galaxy',
 };
 
-const VIDEO_SRC =
-  'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260801_001207_ec20d138-aa45-4b2b-ab8c-bdc71607f240.mp4';
+const VIDEO_SRC = '/404-background.mp4';
 
 /**
  * 404: full-viewport error screen.
