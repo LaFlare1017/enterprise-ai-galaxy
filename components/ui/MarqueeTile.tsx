@@ -1,14 +1,15 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import { faviconUrl, monogram } from '@/lib/utils';
+import { logoUrl, monogram } from '@/lib/utils';
 
 /**
  * One logo tile in the landing-page marquee. Renders the brand mark from the
- * company's official domain via the favicon service; if the fetch fails it
- * falls back to a maturity-tinted monogram so the strip never shows a broken
- * image. The mark is decorative (empty alt): the company names themselves are
- * exposed to screen readers in a static list by CompanyMarquee.
+ * company's official domain via the favicon service (or a local asset for
+ * brands whose domain has no indexed favicon); if the fetch fails it falls
+ * back to a maturity-tinted monogram so the strip never shows a broken
+ * image. The mark is decorative (empty alt): the company names themselves
+ * are exposed to screen readers in a static list by CompanyMarquee.
  */
 export function MarqueeTile({
   name,
@@ -21,10 +22,12 @@ export function MarqueeTile({
 }) {
   const [failed, setFailed] = useState(false);
 
-  if (domain && !failed) {
+  const src = logoUrl(domain);
+
+  if (src && !failed) {
     return (
       <Image
-        src={faviconUrl(domain)}
+        src={src}
         alt=""
         width={128}
         height={128}

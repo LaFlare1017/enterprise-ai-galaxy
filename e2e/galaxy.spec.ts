@@ -1342,6 +1342,40 @@ test('the reactive-lines background draws one static frame under reduced motion'
   expect((await readCanvasFrame(page)).hash).toBe(first.hash);
 });
 
+test('brands without indexed favicons ship stable local logos instead of 404ing', async ({ page }) => {
+  // Berkshire Hathaway is the one local-logo brand in the landing marquee
+  // (the other nine surface in galaxy planet panels through the same logoUrl
+  // helper). Its tile must load from /logos, never from the favicon service,
+  // and no favicon-service request may 404 during the landing-page load.
+  const faviconFailures: string[] = [];
+  page.on('response', (res) => {
+    const url = res.url();
+    if (/(gstatic\.com|google\.com\/s2)/.test(url) && res.status() >= 400) {
+      faviconFailures.push(`${url} -> ${res.status()}`);
+    }
+  });
+
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  // Scroll the marquee into view so its lazy-loaded images actually load.
+  await page
+    .getByRole('heading', { name: /AI MATURITY ASSESSMENTS FOR THE FOLLOWING/i })
+    .scrollIntoViewIfNeeded();
+  await page.waitForTimeout(700);
+
+  // Both marquee copies of Berkshire's tile use the local asset, and it is
+  // visible (the monogram fallback never fired).
+  const berkshireTile = page.locator('img[src*="/logos/berkshire-hathaway"]');
+  await expect(berkshireTile).toHaveCount(2);
+  await expect(berkshireTile.first()).toBeVisible();
+  const res = await page.request.get('/logos/berkshire-hathaway.svg');
+  expect(res.status()).toBe(200);
+
+  // The favicon service was hit for the other 19 brands with no failures.
+  expect(faviconFailures, faviconFailures.join('\n') || 'no failures').toEqual([]);
+});
+
 test('the share button invokes the native Web Share API when available', async ({ page }) => {
   let shared: { title?: string; text?: string; url?: string } | null = null;
   await page.addInitScript(() => {
