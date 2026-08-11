@@ -1129,14 +1129,13 @@ test('the landing page issue form renders and submits a pre-filled GitHub issue'
   );
   await expect(send).toBeEnabled();
 
-  // Submitting opens a pre-filled GitHub issue in a new tab. The repo URL is
-  // a placeholder until the project is published; keep in sync with
-  // REPO_ISSUES_URL in components/ui/ContactForm.tsx.
+  // Submitting opens a pre-filled GitHub issue in a new tab. Keep in sync
+  // with REPO_ISSUES_URL in components/ui/ContactForm.tsx.
   const popupPromise = page.waitForEvent('popup');
   await send.click();
   const popup = await popupPromise;
   const url = new URL(popup.url());
-  expect(url.pathname).toBe('/your-username/enterprise-ai-galaxy/issues/new');
+  expect(url.pathname).toBe('/LaFlare1017/enterprise-ai-galaxy/issues/new');
   expect(url.searchParams.get('title')).toBe('Enterprise AI Galaxy: Jane Smith');
   const body = url.searchParams.get('body');
   expect(body).toContain('We would love a full maturity assessment');
