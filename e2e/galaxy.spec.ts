@@ -1131,13 +1131,22 @@ test('the landing page issue form renders and submits a pre-filled GitHub issue'
 
   // Submitting opens a pre-filled GitHub issue in a new tab. Keep in sync
   // with REPO_ISSUES_URL in components/ui/ContactForm.tsx.
+  //
+  // GitHub bounces an unauthenticated browser from /issues/new to /login but
+  // preserves the pre-filled URL in the return_to parameter (a logged-in
+  // session lands on /issues/new directly), so assert on the pre-fill payload
+  // wherever it lands rather than on GitHub's redirect behavior.
   const popupPromise = page.waitForEvent('popup');
   await send.click();
   const popup = await popupPromise;
-  const url = new URL(popup.url());
-  expect(url.pathname).toBe('/LaFlare1017/enterprise-ai-galaxy/issues/new');
-  expect(url.searchParams.get('title')).toBe('Enterprise AI Galaxy: Jane Smith');
-  const body = url.searchParams.get('body');
+  await popup.waitForLoadState('domcontentloaded');
+  const popupUrl = new URL(popup.url());
+  const prefilled = new URL(
+    popupUrl.pathname === '/login' ? popupUrl.searchParams.get('return_to')! : popupUrl.href
+  );
+  expect(prefilled.pathname).toBe('/LaFlare1017/enterprise-ai-galaxy/issues/new');
+  expect(prefilled.searchParams.get('title')).toBe('Enterprise AI Galaxy: Jane Smith');
+  const body = prefilled.searchParams.get('body');
   expect(body).toContain('We would love a full maturity assessment');
   expect(body).toContain('Filed by Jane Smith (jane@company.com)');
   await popup.close();
