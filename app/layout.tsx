@@ -27,6 +27,10 @@ export const metadata: Metadata = {
     title: 'Enterprise AI Transformation Galaxy',
     description: 'A 3D galaxy of Fortune 500 enterprises, scored on estimated AI maturity from public disclosures. One universe. Explore.',
     type: 'website',
+    // Explicit share URL: several unfurl crawlers (notably LinkedIn and
+    // Facebook) read og:url for the canonical share target. Resolved against
+    // metadataBase, so it always carries the real NEXT_PUBLIC_SITE_URL domain.
+    url: '/',
     siteName: 'Enterprise AI Transformation Galaxy',
     // Clean, query-string-free URL: several unfurl crawlers (notably
     // LinkedIn) refuse og:image URLs that carry cache-busting query params.
