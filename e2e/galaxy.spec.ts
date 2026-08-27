@@ -1419,6 +1419,41 @@ test('the galaxy degrades gracefully when WebGL is unavailable', async ({ browse
   await noWebGL.close();
 });
 
+test('the landing page warns before Enter the galaxy when WebGL is unavailable', async ({ browser }) => {
+  // Same WebGL-off launch as the galaxy fallback test: a browser that cannot
+  // create a WebGL context must be told before it clicks into the 3D scene.
+  const noWebGL = await browser.browserType().launch({
+    args: ['--disable-webgl', '--disable-webgl2', '--disable-software-rasterizer'],
+  });
+  const page = await noWebGL.newPage({ baseURL: 'http://localhost:3100' });
+  const uncaught: string[] = [];
+  page.on('pageerror', (err: Error) => uncaught.push(String(err)));
+
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  // The hero warning appears once the client-side probe resolves, with a
+  // real escape hatch to the methodology research trail.
+  const notice = page.getByText(/Your browser has WebGL turned off/i);
+  await expect(notice).toBeVisible();
+  await expect(
+    notice.getByRole('link', { name: /full methodology and every company's research trail/i })
+  ).toHaveAttribute('href', '/methodology');
+
+  // No uncaught client-side exception reaches the page.
+  await page.waitForTimeout(1000);
+  expect(uncaught).toEqual([]);
+  await noWebGL.close();
+
+  // Control: with WebGL available the notice never renders (no flash on the
+  // supported path that the rest of the suite exercises).
+  const okPage = await browser.newPage({ baseURL: 'http://localhost:3100' });
+  await okPage.goto('/');
+  await okPage.waitForLoadState('networkidle');
+  await expect(okPage.getByText(/Your browser has WebGL turned off/i)).toHaveCount(0);
+  await okPage.close();
+});
+
 test('the share button invokes the native Web Share API when available', async ({ page }) => {
   let shared: { title?: string; text?: string; url?: string } | null = null;
   await page.addInitScript(() => {

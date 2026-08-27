@@ -54,7 +54,7 @@ export function WebGLFallback() {
             </p>
             <p>
               <span className="font-semibold text-star-bright/90">Anywhere else:</span> try a
-              current version of Chrome, Edge, Firefox, or Safari — WebGL is enabled by default
+              current version of Chrome, Edge, Firefox, or Safari. WebGL is enabled by default
               in all of them.
             </p>
             <p>
