@@ -132,6 +132,10 @@ const MARQUEE_LOGOS: Record<string, string> = {
   'chevron.com': '/logos/marquee/chevron.png',
   'jpmorganchase.com': '/logos/marquee/jpmorgan-chase.png',
   'gm.com': '/logos/marquee/general-motors.png',
+  // Backfill 2026 revenue figures put Elevance Health and Centene in the
+  // top 20 (displacing Chevron and General Motors); ship their marks too.
+  'elevancehealth.com': '/logos/marquee/elevance-health.png',
+  'centene.com': '/logos/marquee/centene.png',
 };
 
 /**
