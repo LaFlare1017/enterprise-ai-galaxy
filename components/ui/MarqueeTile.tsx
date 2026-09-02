@@ -1,15 +1,17 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import { logoUrl, monogram } from '@/lib/utils';
+import { marqueeLogoUrl, monogram } from '@/lib/utils';
 
 /**
- * One logo tile in the landing-page marquee. Renders the brand mark from the
- * company's official domain via the favicon service (or a local asset for
- * brands whose domain has no indexed favicon); if the fetch fails it falls
- * back to a maturity-tinted monogram so the strip never shows a broken
- * image. The mark is decorative (empty alt): the company names themselves
- * are exposed to screen readers in a static list by CompanyMarquee.
+ * One logo tile in the landing-page marquee. For the 20 largest companies it
+ * renders a bundled crisp white mark (high-resolution, monochrome) that stays
+ * sharp at any DPR; for the rare brand whose mark is missing it falls back to
+ * the favicon service. If the fetch fails it degrades to a maturity-tinted
+ * monogram so the strip never shows a broken image. The mark is decorative
+ * (empty alt): the company names themselves are exposed to screen readers in a
+ * static list by CompanyMarquee. The tile sits on the transparent page surface
+ * (no white chip) so white marks read cleanly over the dark background.
  */
 export function MarqueeTile({
   name,
@@ -22,28 +24,27 @@ export function MarqueeTile({
 }) {
   const [failed, setFailed] = useState(false);
 
-  const src = logoUrl(domain);
+  const src = marqueeLogoUrl(domain);
 
   if (src && !failed) {
     return (
       <Image
         src={src}
         alt=""
-        width={128}
-        height={128}
+        width={384}
+        height={120}
         unoptimized
         loading="lazy"
-        referrerPolicy="no-referrer"
         onError={() => setFailed(true)}
-        className="h-12 w-12 shrink-0 rounded-lg border border-border-subtle bg-white p-1.5 object-contain"
+        className="h-10 w-auto shrink-0 object-contain px-1"
       />
     );
   }
 
   return (
     <span
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border-subtle text-[11px] font-semibold"
-      style={{ color, backgroundColor: `${color}14` }}
+      className="flex h-10 shrink-0 items-center justify-center rounded-md border border-border-subtle bg-white/[0.03] px-3 text-[11px] font-semibold"
+      style={{ color }}
     >
       {monogram(name)}
     </span>

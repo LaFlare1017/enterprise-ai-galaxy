@@ -1335,10 +1335,10 @@ test('the hero starfield scales its star budget down for mobile viewports', asyn
 });
 
 test('brands without indexed favicons ship stable local logos instead of 404ing', async ({ page }) => {
-  // Berkshire Hathaway is the one local-logo brand in the landing marquee
-  // (the other nine surface in galaxy planet panels through the same logoUrl
-  // helper). Its tile must load from /logos, never from the favicon service,
-  // and no favicon-service request may 404 during the landing-page load.
+  // Every top-20 marquee brand ships a bundled white mark under /logos/marquee
+  // (planet panels keep their own assets under /logos). Berkshire's tile must
+  // load from the bundled set, never from the favicon service, and no
+  // favicon-service request may 404 during the landing-page load.
   const faviconFailures: string[] = [];
   page.on('response', (res) => {
     const url = res.url();
@@ -1356,15 +1356,15 @@ test('brands without indexed favicons ship stable local logos instead of 404ing'
     .scrollIntoViewIfNeeded();
   await page.waitForTimeout(700);
 
-  // Both marquee copies of Berkshire's tile use the local asset, and it is
-  // visible (the monogram fallback never fired).
-  const berkshireTile = page.locator('img[src*="/logos/berkshire-hathaway"]');
+  // Both marquee copies of Berkshire's tile use the bundled white mark, and it
+  // is visible (the monogram fallback never fired).
+  const berkshireTile = page.locator('img[src*="/logos/marquee/berkshire-hathaway"]');
   await expect(berkshireTile).toHaveCount(2);
   await expect(berkshireTile.first()).toBeVisible();
-  const res = await page.request.get('/logos/berkshire-hathaway.svg');
+  const res = await page.request.get('/logos/marquee/berkshire-hathaway.png');
   expect(res.status()).toBe(200);
 
-  // The favicon service was hit for the other 19 brands with no failures.
+  // No favicon-service request failed for any brand on the page.
   expect(faviconFailures, faviconFailures.join('\n') || 'no failures').toEqual([]);
 });
 

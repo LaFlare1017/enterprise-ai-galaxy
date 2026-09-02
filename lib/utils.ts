@@ -102,6 +102,47 @@ export function logoUrl(domain?: string | null): string | null {
   return faviconUrl(domain);
 }
 
+/**
+ * Crisp white wordmark marks for the 20 largest companies in the landing-page
+ * marquee. These are bundled as self-hosted assets (sourced from the
+ * companies' own sites or Wikimedia, see THIRD_PARTY_NOTICES.md) rather than
+ * the low-resolution favicon service, so the scrolling strip stays sharp at
+ * any DPR. Rendered as monochrome silhouettes (white) to read cleanly over the
+ * dark page and to keep the set visually consistent. Keyed by the same domain
+ * used everywhere else in the app.
+ */
+const MARQUEE_LOGOS: Record<string, string> = {
+  'amazon.com': '/logos/marquee/amazon.png',
+  'walmart.com': '/logos/marquee/walmart.png',
+  'unitedhealthgroup.com': '/logos/marquee/united-health.png',
+  'apple.com': '/logos/marquee/apple.png',
+  'abc.xyz': '/logos/marquee/alphabet.png',
+  'berkshirehathaway.com': '/logos/marquee/berkshire-hathaway.png',
+  'cvshealth.com': '/logos/marquee/cvs-health.png',
+  'exxonmobil.com': '/logos/marquee/exxonmobil.png',
+  'mckesson.com': '/logos/marquee/mckesson.png',
+  'cencora.com': '/logos/marquee/cencora.png',
+  'microsoft.com': '/logos/marquee/microsoft.png',
+  'costco.com': '/logos/marquee/costco.png',
+  'thecignagroup.com': '/logos/marquee/cigna.png',
+  'cardinalhealth.com': '/logos/marquee/cardinal-health.png',
+  'nvidia.com': '/logos/marquee/nvidia.png',
+  'toyota.com': '/logos/marquee/toyota.png',
+  'meta.com': '/logos/marquee/meta.png',
+  'chevron.com': '/logos/marquee/chevron.png',
+  'jpmorganchase.com': '/logos/marquee/jpmorgan-chase.png',
+  'gm.com': '/logos/marquee/general-motors.png',
+};
+
+/**
+ * White marquee mark for a company's domain, or null when the brand is not in
+ * the top-20 set (callers then fall back to the favicon service / monogram).
+ */
+export function marqueeLogoUrl(domain?: string | null): string | null {
+  if (!domain) return null;
+  return MARQUEE_LOGOS[domain] ?? null;
+}
+
 /** Initials monogram from a company name, the fallback when no logo loads. */
 export function monogram(name: string): string {
   const words = name
