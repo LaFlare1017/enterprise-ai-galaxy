@@ -85,8 +85,8 @@ e2e/            Playwright specs
 
 This project is open source and contributions are welcome:
 
-- **Report an issue, request a company, or suggest a feature**: the "Report an issue" flow in the tool opens a pre-filled GitHub issue. Point `REPO_ISSUES_URL` in `components/ui/ContactForm.tsx` at your repository's `issues/new` URL before publishing.
-- **Data corrections**: every score on the `/methodology` page links to its public source. If a score or note is off, open an issue with the correction and the source URL.
+- **Leave feedback, request a company, or suggest a feature**: the "Leave feedback or get in contact" flow in the tool opens a pre-filled GitHub issue. Point `REPO_FEEDBACK_URL` in `components/ui/ContactForm.tsx` at your repository's `issues/new` URL before publishing.
+- **Data corrections**: every score on the `/methodology` page links to its public source. If a score or note is off, send feedback with the correction and the source URL.
 - **Pull requests**: fork, branch, and open a PR. CI runs lint, typecheck, build, the full E2E suite, and a Lighthouse a11y/SEO gate on every push and PR.
 
 The design specification lives in `galaxy-handoff.md`.

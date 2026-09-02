@@ -393,15 +393,8 @@ export function PlanetPanel() {
                 href="/#contact"
                 className="block rounded-md bg-maturity-high px-4 py-2.5 text-center text-[13px] font-semibold text-void transition-opacity hover:opacity-90"
               >
-                Report an issue
+                Leave feedback or get in contact
               </a>
-              <button
-                disabled
-                className="block w-full cursor-not-allowed rounded-md border border-border-subtle px-4 py-2.5 text-center text-[13px] font-medium text-ui-muted opacity-60"
-                title="Coming soon"
-              >
-                Compare companies
-              </button>
             </div>
           </div>
         </motion.aside>

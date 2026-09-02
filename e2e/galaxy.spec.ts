@@ -305,12 +305,11 @@ test('double-clicking a star opens planet view; trajectory + reset complete the 
   await expect(profileLink).toBeVisible();
   await expect(profileLink).toHaveAttribute('target', '_blank');
 
-  // The Report-an-issue CTA leads to the landing page's contact section, not
-  // a dead #contact anchor.
-  await expect(page.getByRole('link', { name: 'Report an issue' })).toHaveAttribute(
-    'href',
-    '/#contact'
-  );
+  // The contact CTA leads to the landing page's contact section, not a dead
+  // #contact anchor.
+  await expect(
+    page.getByRole('link', { name: 'Leave feedback or get in contact' })
+  ).toHaveAttribute('href', '/#contact');
 
   // Trajectory: the panel section reveals projections and a 3D path draws in.
   const seeTrajectory = page.getByRole('button', { name: 'See Trajectory' });
@@ -1101,7 +1100,7 @@ test('the Add Company form rejects a duplicate company name', async ({ page }) =
   });
 });
 
-test('the landing page issue form renders and submits a pre-filled GitHub issue', async ({ page }) => {
+test('the landing page feedback form renders and submits a pre-filled GitHub issue', async ({ page }) => {
   // The root route is the explainer landing page.
   await page.goto('/');
 
@@ -1116,7 +1115,7 @@ test('the landing page issue form renders and submits a pre-filled GitHub issue'
   const name = page.getByLabel('Your name');
   const email = page.getByLabel('Your email');
   const message = page.getByLabel('Message');
-  const send = page.getByRole('button', { name: 'File issue' });
+  const send = page.getByRole('button', { name: 'Send feedback' });
   await expect(name).toBeVisible();
   await expect(email).toBeVisible();
   await expect(message).toBeVisible();
@@ -1131,7 +1130,7 @@ test('the landing page issue form renders and submits a pre-filled GitHub issue'
   await expect(send).toBeEnabled();
 
   // Submitting opens a pre-filled GitHub issue in a new tab. Keep in sync
-  // with REPO_ISSUES_URL in components/ui/ContactForm.tsx.
+  // with REPO_FEEDBACK_URL in components/ui/ContactForm.tsx.
   //
   // GitHub bounces an unauthenticated browser from /issues/new to /login but
   // preserves the pre-filled URL in the return_to parameter (a logged-in
@@ -1149,20 +1148,20 @@ test('the landing page issue form renders and submits a pre-filled GitHub issue'
   expect(prefilled.searchParams.get('title')).toBe('Enterprise AI Galaxy: Jane Smith');
   const body = prefilled.searchParams.get('body');
   expect(body).toContain('We would love a full maturity assessment');
-  expect(body).toContain('Filed by Jane Smith (jane@company.com)');
+  expect(body).toContain('Sent by Jane Smith (jane@company.com)');
   await popup.close();
 
   // The confirmation renders after submit.
   await expect(
-    page.getByText('Opening GitHub to file your issue.')
+    page.getByText('Opening GitHub. Your message is ready to send.')
   ).toBeVisible();
 });
 
 test('no private contact address ships anywhere in the served page or JS', async ({ page }) => {
-  // The open-source build routes contact through GitHub issues; a private
+  // The open-source build routes contact through GitHub; a private
   // address must never reappear. This scans every served bundle for the old
   // address, its base64 form, gmail, and any mailto link, and proves the
-  // scan is live by asserting the new issues flow is present in the bundle.
+  // scan is live by asserting the feedback flow is present in the bundle.
   const FORBIDDEN = ['mailto:', 'gmail.com', 'hodleron', 'SG9kbGVyb25AZ21haWwuY29t'];
 
   // Collect every JS response the landing page (and any prefetched routes)
@@ -1192,7 +1191,7 @@ test('no private contact address ships anywhere in the served page or JS', async
     )
   ).join('\n');
 
-  // The bundles must carry the issues flow (proves the scan covered the
+  // The bundles must carry the feedback flow (proves the scan covered the
   // contact form code, not vacuous) and none of the forbidden traces.
   expect(jsBodies).toContain('issues/new');
   const haystack = `${html}\n${jsBodies}`.toLowerCase();
